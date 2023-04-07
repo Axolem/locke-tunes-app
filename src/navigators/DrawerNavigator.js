@@ -15,15 +15,15 @@ import {
 } from "@react-navigation/drawer";
 import Help from "../screens/help/Help";
 import AppNavigator from "./AppNavigator";
-import About from "../screens/about/About";
 import Profile from "../screens/profile/Profile";
 import Settings from "../screens/settings/Settings";
+import Playlists from "../screens/playlist/Playlists";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 
 const iconSize = 24;
 const Drawer = createDrawerNavigator();
 
-const DrawerNavigation = ({ navigation }) => {
+const DrawerNavigation = ({ navigation }) => { 
   const { colors } = useTheme();
 
   return (
@@ -81,8 +81,10 @@ const DrawerNavigation = ({ navigation }) => {
               color={colors.dark[100]}
             />
           ),
+          
         }}
-        component={About}
+        component={Playlists}
+        
       />
       <Drawer.Screen
         name="Settings"

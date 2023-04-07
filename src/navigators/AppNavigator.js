@@ -1,13 +1,15 @@
-import { useTheme } from "native-base";
 import Home from "../screens/home/Home";
 import Upload from "../screens/upload/Upload";
-import Playlists from "../screens/playlist/Playlists";
+import { Pressable, useTheme } from "native-base";
+import NowPlaying from "../screens/player/NowPlaying";
+import { Ionicons, Feather } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { Ionicons, MaterialCommunityIcons, Feather } from "@expo/vector-icons";
 
 const Tab = createBottomTabNavigator();
 const AppNavigator = () => {
   const { colors } = useTheme();
+  const navigation = useNavigation();
   return (
     <Tab.Navigator
       screenOptions={{
@@ -38,17 +40,39 @@ const AppNavigator = () => {
         }}
       />
       <Tab.Screen
-        name="Playlist"
-        component={Playlists}
+        name="Now Playing"
+        component={NowPlaying}
         options={{
           tabBarIcon: ({ focused, color, size }) => (
-            <MaterialCommunityIcons
-              name="playlist-music-outline"
+            <Ionicons
+              name="ios-play-outline"
               size={focused ? size + 2 : size}
               color={color}
             />
           ),
           tabBarLabelStyle: { fontSize: 16 },
+          headerShown: true,
+          headerStyle: {
+            backgroundColor: colors.primary[50],
+          },
+          headerLeft: () => (
+            <Pressable onPress={() => navigation.goBack()}
+            >
+              <Ionicons
+                name="ios-chevron-back-outline"
+                size={28}
+                color={colors.white[50]}
+              />
+            </Pressable>
+          ),
+          headerLeftContainerStyle: {
+            marginLeft: 20,
+          },
+          title: "Now playing",
+          headerTitleAlign: "center",
+          headerTitleStyle: {
+            color: colors.light[50],
+          },
         }}
       />
       <Tab.Screen
