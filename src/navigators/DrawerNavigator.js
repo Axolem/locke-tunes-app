@@ -1,54 +1,115 @@
 import {
+  Text,
+  VStack,
+  HStack,
+  Avatar,
+  useTheme,
+  Pressable,
+  useColorMode,
+} from "native-base";
+import {
+  DrawerItem,
+  DrawerItemList,
   createDrawerNavigator,
   DrawerContentScrollView,
-  DrawerItemList,
-  DrawerItem,
 } from "@react-navigation/drawer";
-
+import Help from "../screens/help/Help";
+import AppNavigator from "./AppNavigator";
 import About from "../screens/about/About";
 import Profile from "../screens/profile/Profile";
 import Settings from "../screens/settings/Settings";
-import AppNavigator from "./AppNavigator";
-import {
-  Avatar,
-  Button,
-  Center,
-  HStack,
-  Pressable,
-  Text,
-  VStack,
-  View,
-  useColorMode,
-  useTheme,
-} from "native-base";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 
-import { Ionicons } from "@expo/vector-icons";
-
+const iconSize = 24;
 const Drawer = createDrawerNavigator();
 
 const DrawerNavigation = ({ navigation }) => {
   const { colors } = useTheme();
+
   return (
     <Drawer.Navigator
       initialRouteName="App"
       drawerContent={(props) => <CustomDrawerContent {...props} />}
-      defaultStatus="open"
+      
       screenOptions={{
         headerShown: false,
         swipeEdgeWidth: 150,
+        drawerActiveTintColor: colors.dark[50],
+        drawerLabelStyle: {
+          color: colors.light[50],
+          fontSize: 18,
+        },
         drawerStyle: {
           backgroundColor: colors.primary[50],
         },
       }}
     >
-      <Drawer.Screen name="App" component={AppNavigator} options={{}} />
-      <Drawer.Screen name="Profile" component={Profile} />
+      <Drawer.Screen
+        name="app"
+        component={AppNavigator}
+        options={{
+          title: "Home",
+          drawerIcon: () => (
+            <Ionicons
+              name="ios-home-outline"
+              size={iconSize}
+              color={colors.dark[100]}
+            />
+          ),
+        }}
+      />
+      <Drawer.Screen
+        name="Profile"
+        component={Profile}
+        options={{
+          drawerIcon: () => (
+            <Ionicons
+              name="ios-person-outline"
+              size={iconSize}
+              color={colors.dark[100]}
+            />
+          ),
+        }}
+      />
       <Drawer.Screen
         name="Playlists"
-        options={{ drawerLabel: () => <Button>Play lists</Button> }}
+        options={{
+          drawerIcon: () => (
+            <MaterialCommunityIcons
+              name="playlist-music-outline"
+              size={iconSize}
+              color={colors.dark[100]}
+            />
+          ),
+        }}
         component={About}
       />
-      <Drawer.Screen name="Settings" component={Settings} />
+      <Drawer.Screen
+        name="Settings"
+        component={Settings}
+        options={{
+          drawerIcon: () => (
+            <Ionicons
+              name="ios-settings-outline"
+              size={iconSize}
+              color={colors.dark[100]}
+            />
+          ),
+        }}
+      />
+      <Drawer.Screen
+        name="Help"
+        component={Help}
+        options={{
+          drawerIcon: () => (
+            <Ionicons
+              name="ios-help-outline"
+              size={iconSize}
+              color={colors.dark[100]}
+            />
+          ),
+        }}
+      />
     </Drawer.Navigator>
   );
 };
@@ -56,17 +117,17 @@ const DrawerNavigation = ({ navigation }) => {
 export default DrawerNavigation;
 
 function CustomDrawerContent(props) {
-  const { toggleColorMode, colorMode } = useColorMode();
   const { colors } = useTheme();
+  const { toggleColorMode, colorMode } = useColorMode();
+
   return (
     <DrawerContentScrollView {...props}>
       <DrawerItem
         pressColor="none"
-        //style={{ display: "flex", justifyContent: "space-between" }}
         label={({ focused, color }) => (
           <HStack justifyContent={"space-between"} mb={4}>
             <VStack>
-              <Avatar size={"lg"} />
+              <Avatar size={"xl"} />
 
               <Text
                 colorScheme={"white"}
@@ -88,30 +149,46 @@ function CustomDrawerContent(props) {
               </Text>
             </VStack>
             <Pressable
-              bgColor={colors.coolGray[50]}
+              bgColor={colors.coolGray[800]}
               onPress={toggleColorMode}
-              height={"1"}
+              height={"1/4"}
+              borderRadius={"lg"}
+              p={"2"}
             >
               {colorMode === "dark" ? (
                 <Ionicons
                   name="ios-sunny-outline"
-                  size={30}
+                  size={iconSize}
                   color={colors.dark[50]}
                 />
               ) : (
                 <Ionicons
                   name="ios-moon-outline"
-                  size={30}
+                  size={iconSize}
                   color={colors.primary[50]}
                 />
               )}
             </Pressable>
           </HStack>
         )}
-        //onPress={() => alert("Link to help")}
       />
       <DrawerItemList {...props} />
-      <DrawerItem label="Help" onPress={() => alert("Link to help")} />
+      <DrawerItem
+        style={{ backgroundColor: colors.danger }}
+        label={() => (
+          <HStack>
+            <Ionicons
+              name="ios-exit-outline"
+              size={iconSize}
+              color={colors.dark[100]}
+            />
+            <Text color={colors.light[50]} fontSize={18} ml={"1/6"}>
+              Logout
+            </Text>
+          </HStack>
+        )}
+        onPress={() => alert("You are loging out")}
+      />
     </DrawerContentScrollView>
   );
 }
