@@ -56,8 +56,7 @@ const AppNavigator = () => {
             backgroundColor: colors.primary[50],
           },
           headerLeft: () => (
-            <Pressable onPress={() => navigation.goBack()}
-            >
+            <Pressable onPress={() => navigation.goBack()}>
               <Ionicons
                 name="ios-chevron-back-outline"
                 size={28}

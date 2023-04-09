@@ -143,7 +143,7 @@ function CustomDrawerContent(props) {
               <Text
                 colorScheme={"white"}
                 color={"dark.50"}
-                mt={3}
+                mt={1}
                 fontSize={"md"}
                 fontStyle={"italic"}
               >
