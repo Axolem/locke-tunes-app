@@ -1,22 +1,31 @@
 import {
+  Text,
+  View,
+  VStack,
   Center,
   HStack,
-  StatusBar,
-  Text,
-  VStack,
-  View,
   useTheme,
+  StatusBar,
 } from "native-base";
+
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Ionicons } from "@expo/vector-icons";
+import SongCard from "./SongCard";
+import SongControls from "./SongControls";
 
 const NowPlaying = () => {
   const { colors } = useTheme();
   return (
     <SafeAreaView>
       <StatusBar backgroundColor={colors.primary[50]} />
-      <View py="2" px={"4"} backgroundColor={"primary.50"} height={"100%"}>
-        <VStack px="6"></VStack>
+      <View  backgroundColor={"primary.50"} height={"100%"}>
+        <VStack px="6">
+          <Center>
+            <SongCard />
+
+          </Center>
+          <SongControls />
+
+        </VStack>
       </View>
     </SafeAreaView>
   );

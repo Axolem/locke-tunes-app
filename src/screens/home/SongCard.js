@@ -1,5 +1,4 @@
 import { Center, Pressable, Text, VStack, View, useTheme } from "native-base";
-import React from "react";
 import CachedImage from "react-native-expo-cached-image";
 
 const SongCard = ({
@@ -10,7 +9,7 @@ const SongCard = ({
   const { colors } = useTheme();
   return (
     <View w={190}>
-      <Pressable android_ripple={{radius:0.5, color: colors.dark[50], foreground: true}}>
+      <Pressable android_ripple={{ radius: 0.5, color: colors.dark[50], foreground: true }}>
         <VStack>
           <CachedImage
             style={{
