@@ -68,8 +68,8 @@ const Signup = ({ navigation }) => {
       <SafeAreaView >
         <VStack px={"10"}>
           <Box>
-            <Text fontSize={"6xl"} fontWeight={"bold"} color={colors.light[50]}>Sign in</Text>
-            <Text fontSize={"md"} mb={"16"} color={colors.light[50]}>to continue playing</Text>
+            <Text fontSize={"6xl"} fontWeight={"bold"} color={colors.light[50]}>Sign up</Text>
+            <Text fontSize={"md"} mb={"16"} color={colors.light[50]}>to start playing</Text>
           </Box>
 
           <Box>
@@ -160,7 +160,7 @@ const Signup = ({ navigation }) => {
               onChangeText={(value) => setUserData({ ...userData, confirmPassword: value })}
             />
           </Box>
-          <Button size={"lg"} p={"4"} fontSize={"lg"} onPress={() => registerMe()}>Sign in</Button>
+          <Button size={"lg"} p={"4"} fontSize={"lg"} onPress={() => registerMe()}>Sign up</Button>
         </VStack>
       </SafeAreaView>
     </ImageBackground >

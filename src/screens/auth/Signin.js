@@ -48,7 +48,7 @@ const Signin = ({ navigation }) => {
         <VStack px={"10"}>
           <Box>
             <Text fontSize={"6xl"} fontWeight={"bold"} color={colors.light[50]}>Sign in</Text>
-            <Text fontSize={"md"} mb={"16"} color={colors.light[50]}>to continue playing</Text>
+            <Text fontSize={"md"} mb={"12"} color={colors.light[50]}>to continue playing</Text>
           </Box>
 
           <Box>
@@ -75,7 +75,7 @@ const Signin = ({ navigation }) => {
 
             <Input
               p={"3"}
-              mb={"10"}
+              mb={"8"}
               size={"lg"}
               autoComplete="password"
               placeholder="Password"
