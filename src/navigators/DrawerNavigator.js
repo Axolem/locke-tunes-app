@@ -23,14 +23,95 @@ import Playlists from "../screens/playlist/Playlists";
 import { doUserLogOut } from "../utils/communicateToDb";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 
-
-
 const iconSize = 24;
 const Drawer = createDrawerNavigator();
 
-const DrawerNavigation = ({ navigation }) => {
+const CustomDrawerContent = (props) => {
   const { colors } = useTheme();
-  const { setUser, retryLogin } = useContext(AppStateContext);
+  const { toggleColorMode, colorMode } = useColorMode();
+  const { setUser, retryLogin, user } = useContext(AppStateContext);
+
+  return (
+    <DrawerContentScrollView {...props}>
+      <DrawerItem
+        pressColor="none"
+        label={() => (
+          <HStack justifyContent={"space-between"} mb={4}>
+            <VStack>
+              <Avatar size={"xl"}
+                source={{ uri: user.profilePicture.url }}
+              />
+              <Text
+                colorScheme={"white"}
+                color={"dark.50"}
+                mt={3}
+                fontSize={"lg"}
+                fontWeight={"semibold"}
+              >
+                {user.name}
+              </Text>
+              <Text
+                colorScheme={"white"}
+                color={"dark.50"}
+                mt={1}
+                fontSize={"md"}
+                fontStyle={"italic"}
+              >
+                {`@${user.email.split('@')[0]}`}
+              </Text>
+            </VStack>
+            <Pressable
+              bgColor={colors.coolGray[800]}
+              onPress={toggleColorMode}
+              height={"1/4"}
+              borderRadius={"lg"}
+              p={"2"}
+            >
+              {colorMode === "dark" ? (
+                <Ionicons
+                  name="ios-sunny-outline"
+                  size={iconSize}
+                  color={colors.dark[50]}
+                />
+              ) : (
+                <Ionicons
+                  name="ios-moon-outline"
+                  size={iconSize}
+                  color={colors.primary[50]}
+                />
+              )}
+            </Pressable>
+          </HStack>
+        )}
+      />
+      <DrawerItemList {...props} />
+      <DrawerItem
+        style={{ backgroundColor: colors.danger }}
+        label={() => (
+          <HStack>
+            <Ionicons
+              name="ios-exit-outline"
+              size={iconSize}
+              color={colors.dark[100]}
+            />
+            <Text color={colors.light[50]} fontSize={18} ml={"1/6"}>
+              Logout
+            </Text>
+          </HStack>
+        )}
+        onPress={async () => {
+          if (await doUserLogOut()) {
+            setUser(null)
+            retryLogin()
+          }
+        }}
+      />
+    </DrawerContentScrollView>
+  );
+}
+
+const DrawerNavigation = () => {
+  const { colors } = useTheme();
   return (
     <Drawer.Navigator
       initialRouteName="App"
@@ -122,86 +203,3 @@ const DrawerNavigation = ({ navigation }) => {
 };
 
 export default DrawerNavigation;
-
-function CustomDrawerContent(props) {
-  const { colors } = useTheme();
-  const { toggleColorMode, colorMode } = useColorMode();
-  const { setUser, retryLogin } = useContext(AppStateContext);
-  
-  return (
-    <DrawerContentScrollView {...props}>
-      <DrawerItem
-        pressColor="none"
-        label={({ focused, color }) => (
-          <HStack justifyContent={"space-between"} mb={4}>
-            <VStack>
-              <Avatar size={"xl"} />
-
-              <Text
-                colorScheme={"white"}
-                color={"dark.50"}
-                mt={3}
-                fontSize={"lg"}
-                fontWeight={"semibold"}
-              >
-                Axole Maranjana
-              </Text>
-              <Text
-                colorScheme={"white"}
-                color={"dark.50"}
-                mt={1}
-                fontSize={"md"}
-                fontStyle={"italic"}
-              >
-                @Axolem
-              </Text>
-            </VStack>
-            <Pressable
-              bgColor={colors.coolGray[800]}
-              onPress={toggleColorMode}
-              height={"1/4"}
-              borderRadius={"lg"}
-              p={"2"}
-            >
-              {colorMode === "dark" ? (
-                <Ionicons
-                  name="ios-sunny-outline"
-                  size={iconSize}
-                  color={colors.dark[50]}
-                />
-              ) : (
-                <Ionicons
-                  name="ios-moon-outline"
-                  size={iconSize}
-                  color={colors.primary[50]}
-                />
-              )}
-            </Pressable>
-          </HStack>
-        )}
-      />
-      <DrawerItemList {...props} />
-      <DrawerItem
-        style={{ backgroundColor: colors.danger }}
-        label={() => (
-          <HStack>
-            <Ionicons
-              name="ios-exit-outline"
-              size={iconSize}
-              color={colors.dark[100]}
-            />
-            <Text color={colors.light[50]} fontSize={18} ml={"1/6"}>
-              Logout
-            </Text>
-          </HStack>
-        )}
-        onPress={async () => {
-          if (await doUserLogOut()) {
-            setUser(null)
-            retryLogin()
-          }
-        }}
-      />
-    </DrawerContentScrollView>
-  );
-}
