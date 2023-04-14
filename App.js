@@ -1,7 +1,7 @@
+import theme from "./src/utils/theme";
 import { NativeBaseProvider } from "native-base";
 import { AppStateProvider } from "./src/utils/context";
 import RootNavigator from "./src/navigators/RootNavigator";
-import theme from "./src/utils/theme";
 
 export default function App() {
   return (

@@ -3,8 +3,9 @@ import { Entypo } from '@expo/vector-icons';
 import { useContext, useState } from "react";
 import { Ionicons } from '@expo/vector-icons';
 import { ImageBackground } from "react-native";
+import { errorDisplay } from "../../utils/functions";
 import { AppStateContext } from "../../utils/context";
-import { doUserLogin } from "../../utils/communicateToDb";
+import { doUserRegister } from "../../utils/communicateToDb";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Box, Button, Icon, Input, Pressable, Text, VStack, useTheme, useToast } from "native-base";
 
@@ -15,21 +16,17 @@ import isEmail from 'validator/lib/isEmail';
 import isLength from 'validator/lib/isLength';
 import normalizeEmail from 'validator/lib/normalizeEmail';
 import isStrongPassword from 'validator/lib/isStrongPassword';
-import { errorDisplay } from "../../utils/functions";
 
 const image = require("../../../assets/images/Register.png")
 
-const Signup = ({ navigation }) => {
-  const toast = useToast();
+const Signup = () => {
   const { colors } = useTheme()
-
-  const { setUser } = useContext(AppStateContext);
+  const { setUser, retryLogin } = useContext(AppStateContext);
 
   const [show, setShow] = useState(false);
   const [userData, setUserData] = useState({ name: "", email: "", password: "", confirmPassword: "" })
 
-
-  const registerMe = () => {
+  const registerMe = async () => {
     let email = escape(trim(userData.email))
     const name = escape(trim(userData.name))
     const password = escape(trim(userData.password))
@@ -38,26 +35,17 @@ const Signup = ({ navigation }) => {
     email = normalizeEmail(email)
 
     if (!isLength(name, { min: 3, max: 12 })) { return errorDisplay(" Opss! Invalid name 3 - 12 charactors please.", "name") }
-    if (!isEmail(userData.email)) { return errorDisplay("Opss! Invalid email.", "email") }
+    if (!isEmail(email)) { return errorDisplay("Opss! Invalid email.", "email") }
     if (!equals(password, confirmPassword)) { return errorDisplay(" Opss! Passwords do not match.", "same-pass") }
     if (!isStrongPassword(password, { minLength: 6, })) { return errorDisplay(" Weak! Passwork is weak, are you?", "strong-pass") }
 
-    const data = doUserLogin(userData)
+    const data = await doUserRegister({ email, password, name })
 
     if (data[0]) {
-      try {
-        //save to async storage
-
-        //save to context
-
-
-        //navigation.navigate("home")
-      } catch (error) {
-
-      }
+      setUser(data[1])
+      retryLogin()
     }
   }
-
 
   return (
     <ImageBackground source={image} resizeMode="cover" style={{

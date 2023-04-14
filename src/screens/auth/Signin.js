@@ -10,31 +10,21 @@ import { Box, Button, Icon, Input, Pressable, Text, VStack, useTheme, useToast }
 const image = require("../../../assets/images/Login.png")
 
 const Signin = ({ navigation }) => {
-  const toast = useToast();
   const { colors } = useTheme()
-  const { setUser } = useContext(AppStateContext);
+  const { setUser, retryLogin } = useContext(AppStateContext);
 
   const [show, setShow] = useState(false);
   const [userData, setUserData] = useState({ email: "", password: "" })
 
-
-  const logMeIn = () => {
+  const logMeIn = async () => {
     if (userData.email.length < 3 && userData.email.length < 5) {
       return console.log("Ivalid login deatails", userData);
     }
-    const data = doUserLogin(userData)
+    const data = await doUserLogin(userData)
 
     if (data[0]) {
-      try {
-        //save to async storage
-
-        //save to context
-
-
-        //navigation.navigate("home")
-      } catch (error) {
-
-      }
+      setUser(data[1])
+      retryLogin()
     }
   }
 
@@ -111,7 +101,6 @@ const Signin = ({ navigation }) => {
         </VStack>
       </SafeAreaView>
     </ImageBackground >
-
   );
 };
 

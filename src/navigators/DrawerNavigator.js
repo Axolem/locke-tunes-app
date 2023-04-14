@@ -13,24 +13,29 @@ import {
   createDrawerNavigator,
   DrawerContentScrollView,
 } from "@react-navigation/drawer";
+import { useContext } from "react";
 import Help from "../screens/help/Help";
 import AppNavigator from "./AppNavigator";
 import Profile from "../screens/profile/Profile";
+import { AppStateContext } from "../utils/context";
 import Settings from "../screens/settings/Settings";
 import Playlists from "../screens/playlist/Playlists";
+import { doUserLogOut } from "../utils/communicateToDb";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+
+
 
 const iconSize = 24;
 const Drawer = createDrawerNavigator();
 
-const DrawerNavigation = ({ navigation }) => { 
+const DrawerNavigation = ({ navigation }) => {
   const { colors } = useTheme();
-
+  const { setUser, retryLogin } = useContext(AppStateContext);
   return (
     <Drawer.Navigator
       initialRouteName="App"
       drawerContent={(props) => <CustomDrawerContent {...props} />}
-      
+
       screenOptions={{
         headerShown: false,
         swipeEdgeWidth: 150,
@@ -81,10 +86,10 @@ const DrawerNavigation = ({ navigation }) => {
               color={colors.dark[100]}
             />
           ),
-          
+
         }}
         component={Playlists}
-        
+
       />
       <Drawer.Screen
         name="Settings"
@@ -121,7 +126,8 @@ export default DrawerNavigation;
 function CustomDrawerContent(props) {
   const { colors } = useTheme();
   const { toggleColorMode, colorMode } = useColorMode();
-
+  const { setUser, retryLogin } = useContext(AppStateContext);
+  
   return (
     <DrawerContentScrollView {...props}>
       <DrawerItem
@@ -189,7 +195,12 @@ function CustomDrawerContent(props) {
             </Text>
           </HStack>
         )}
-        onPress={() => alert("You are loging out")}
+        onPress={async () => {
+          if (await doUserLogOut()) {
+            setUser(null)
+            retryLogin()
+          }
+        }}
       />
     </DrawerContentScrollView>
   );
