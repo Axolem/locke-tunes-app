@@ -1,15 +1,23 @@
 import Home from "../screens/home/Home";
-import Upload from "../screens/upload/Upload";
 import { Pressable, useTheme } from "native-base";
 import NowPlaying from "../screens/player/NowPlaying";
 import { Ionicons, Feather } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { UploadStack } from "./TabStacks";
+
+import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 
 const Tab = createBottomTabNavigator();
 const AppNavigator = () => {
   const { colors } = useTheme();
   const navigation = useNavigation();
+
+  function showHeader(route) {
+    const routeName = getFocusedRouteNameFromRoute(route) ?? 'upload';
+    return routeName === "upload"
+  }
+
   return (
     <Tab.Navigator
       screenOptions={{
@@ -76,8 +84,8 @@ const AppNavigator = () => {
       />
       <Tab.Screen
         name="Upload"
-        component={Upload}
-        options={{
+        component={UploadStack}
+        options={({ route }) => ({
           tabBarIcon: ({ focused, color, size }) => (
             <Feather
               name="upload"
@@ -86,7 +94,31 @@ const AppNavigator = () => {
             />
           ),
           tabBarLabelStyle: { fontSize: 16 },
-        }}
+          tabBarLabelStyle: { fontSize: 16 },
+          headerShown: showHeader(route),
+          headerStyle: {
+            backgroundColor: colors.primary[50],
+          },
+          headerRight: () => (
+            <Pressable onPress={() => navigation.navigate("my-uploads")}>
+              <Ionicons
+                name="ios-cloud-done-outline"
+                size={28}
+                color={colors.white[50]}
+              />
+            </Pressable>
+          ),
+          headerRightContainerStyle: {
+            marginRight: 20,
+          },
+          title: "Uploads",
+          headerTitleAlign: "center",
+          headerTitleStyle: {
+            color: colors.light[50],
+            marginLeft: 20
+          },
+          tabBarLabel: "Upload"
+        })}
       />
     </Tab.Navigator>
   );

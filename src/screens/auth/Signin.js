@@ -5,7 +5,8 @@ import { ImageBackground } from "react-native";
 import { AppStateContext } from "../../utils/context";
 import { doUserLogin } from "../../utils/communicateToDb";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Box, Button, Icon, Input, Pressable, Text, VStack, useTheme, useToast } from "native-base";
+import { Box, Button, Icon, Input, Pressable, Text, VStack, useTheme } from "native-base";
+import { errorDisplay } from "../../utils/functions";
 
 const image = require("../../../assets/images/Login.png")
 
@@ -18,7 +19,7 @@ const Signin = ({ navigation }) => {
 
   const logMeIn = async () => {
     if (userData.email.length < 3 && userData.email.length < 5) {
-      return console.log("Ivalid login deatails", userData);
+      return errorDisplay("Ivalid login deatails");
     }
     const data = await doUserLogin(userData)
 

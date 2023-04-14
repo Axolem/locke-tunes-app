@@ -8,8 +8,8 @@ import {
   StatusBar,
 } from "native-base";
 import { Ionicons } from "@expo/vector-icons";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { ScrollView } from "react-native-gesture-handler";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import SongCard from "./SongCard";
 
