@@ -1,19 +1,94 @@
-import { Ionicons } from "@expo/vector-icons";
-import { Box, Button, Center, CheckIcon, HStack, Icon, Input, Pressable, Select, StatusBar, Text, VStack, View, useTheme } from "native-base";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { MaterialIcons } from '@expo/vector-icons';
-
-import { Octicons } from '@expo/vector-icons';
 import { useState } from "react";
+//import SelectSongModal from "./SelectSongModal";
+import { errorDisplay } from "../../utils/functions";
+import { Octicons, Ionicons } from '@expo/vector-icons';
+import { useFocusEffect } from "@react-navigation/native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
+import { Box, Button, Center, CheckIcon, Icon, Input, Pressable, Select, StatusBar, Text, VStack, View, useTheme } from "native-base";
+
+import trim from 'validator/lib/trim';
+import isLength from 'validator/lib/isLength';
+import { uploadSong } from "../../utils/communicateToDb";
+
+import * as FileSystem from 'expo-file-system';
+import * as MediaLibrary from 'expo-media-library';
+import * as DocumentPicker from 'expo-document-picker';
+import { useCallback } from "react";
+
+
 
 const Upload = () => {
   const { colors } = useTheme();
-  const [songData, setSongData] = useState({ songName: "", artistName: "", visisbility: true, category: "", tags: "", songImage:"" })
+  const [songData, setSongData] = useState({ songName: "", artistName: "", visisbility: true, category: "", tags: "", songImage: "", file: {} })
+  //const [allSongs, setAllSongs] = useState([])
+  //const [modalVisible, setModalVisible] = useState(false);
 
+  useFocusEffect(useCallback(() => {
+    return async () => {
 
-  const submitSong = () => {
+      const permission = await MediaLibrary.getPermissionsAsync();
+      console.log("Ran", permission);
+      if (permission.granted) {
+        return
+      }
 
+      if (!permission.canAskAgain && !permission.granted) {
+        await MediaLibrary.getPermissionsAsync();
+      }
+
+      if (!permission.granted && permission.canAskAgain) {
+        const { status, canAskAgain } =
+          await MediaLibrary.requestPermissionsAsync();
+        if (status === 'denied' && canAskAgain) {
+          await MediaLibrary.getPermissionsAsync();
+        }
+      }
+    }
+  }
+  ))
+
+  const getSongFronPhone = async () => {
+    try {
+      const result = await DocumentPicker.getDocumentAsync({ type: "audio/*", copyToCacheDirectory: true });
+      if (result.type === 'cancel') throw "cancelled!";
+
+      const fileUri = result.uri;
+      const fileName = result.name;
+      const fileSize = result.size;
+      const fileMIMEType = result.type;
+
+      const base64String = await FileSystem.readAsStringAsync(fileUri, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+
+      const file = {
+        fileName,
+        fileSize,
+        fileMIMEType,
+        base64String
+      }
+
+      setSongData(prev => ({ ...prev, file, songName: fileName }))
+    } catch (error) {
+      errorDisplay(error.message, "picker");
+    }
+  }
+
+  const submitSong = async () => {
+    const name = trim(songData.songName)
+    const aname = trim(songData.artistName)
+    const tags = trim(songData.tags)
+
+    if (!isLength(name, { min: 3, max: 20 })) { return errorDisplay("Invalid song name!", "songName") }
+    if (!isLength(aname, { min: 3, max: 12 })) { return errorDisplay("Invalid artist name!", "aName") }
+    if (!isLength(tags, { min: 3, max: 12 })) { return errorDisplay("Please enter 1 tag at least!", "tag") }
+
+    const song = {
+      ...songData, songName: name, artistName: aname, tags: tags.split(',')
+    }
+
+    await uploadSong(song)
   }
 
   return (
@@ -24,7 +99,7 @@ const Upload = () => {
           <Center>
             <Pressable
               _pressed={{ opacity: 0.5, }}
-              onPress={() => { console.log("Picking a song..."); }}
+              onPress={() => { getSongFronPhone() }}
               mt={"5"} borderColor={colors.dark[50]}
               borderRadius={"md"} borderWidth={"1"}
               width={"2/3"}
@@ -33,7 +108,9 @@ const Upload = () => {
               <VStack >
                 <Center>
                   <Octicons name="single-select" size={84} color={colors.dark[50]} />
-                  <Text fontSize={"xl"} color={colors.dark[50]}>Pick a song from your phone</Text>
+                  <Text fontSize={"xl"} color={colors.dark[50]}>
+                    {songData.songName ? songData.songName : "Pick a song from your phone"}
+                  </Text>
                 </Center>
               </VStack>
             </Pressable>
@@ -58,7 +135,7 @@ const Upload = () => {
                   />
                 }
                 value={songData.songName}
-                onChangeText={(value) => setUserData({ ...songData, songName: value })}
+                onChangeText={(value) => setSongData({ ...songData, songName: value })}
               />
               <Input
                 p={"2"}
@@ -77,7 +154,7 @@ const Upload = () => {
                   />
                 }
                 value={songData.artistName}
-                onChangeText={(value) => setUserData({ ...songData, artistName: value })}
+                onChangeText={(value) => setSongData({ ...songData, artistName: value })}
               />
               <Input
                 p={"2"}
@@ -96,7 +173,7 @@ const Upload = () => {
                   />
                 }
                 value={songData.tags}
-                onChangeText={(value) => setUserData({ ...songData, tags: value })}
+                onChangeText={(value) => setSongData({ ...songData, tags: value })}
               />
 
               <Select
@@ -138,7 +215,7 @@ const Upload = () => {
                 accessibilityLabel="Choose visibility"
                 placeholder="Choose song visibility"
                 _selectedItem={{
-                
+
                   endIcon:
                     <CheckIcon size="5" />
                 }}
@@ -161,6 +238,7 @@ const Upload = () => {
           <Button mt={"5"} variant={"solid"} onPress={() => submitSong()}>Submit</Button>
         </VStack>
       </View>
+      {/* <SelectSongModal allSongs={allSongs} modalVisible={modalVisible} setModalVisible={setModalVisible} setSongData={setSongData} /> */}
     </SafeAreaView>
   );
 };

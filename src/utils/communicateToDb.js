@@ -83,3 +83,36 @@ export const doUserLogOut = async () => {
         return false;
     }
 };
+
+export const uploadSong = async (song = {
+    songName: "", artistName: "", visisbility: true, category: "", tags: [], songImage: ""
+}
+) => {
+
+    try {
+        const songFile = new Database.File(song.file.fileName, { base64: song.file.base64String }, song.file.fileMIMEType);
+
+        const user = await Database.User.currentAsync();
+
+        const responseFile = await songFile.save();
+
+        const Music = Database.Object.extend('music');
+
+        const music = new Music();
+
+        music.set('sondFile', responseFile);
+        music.set('songName', song.songName);
+        music.set('artist', song.artistName);
+        music.set('visibility', song.visisbility);
+        music.set('category', song.category);
+        music.set('tags', song.tags);
+        music.set('owner', user);
+
+        await music.save();
+
+        successDisplay('Song uploaded successfully.', "saveSong");
+
+    } catch (error) {
+        errorDisplay(error.message, "saveSong")
+    }
+}
